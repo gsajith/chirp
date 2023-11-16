@@ -26,3 +26,12 @@ You can check out the [create-t3-app GitHub repository](https://github.com/t3-os
 ## How do I deploy this?
 
 Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+
+# Run it
+
+Start at localhost:3000:
+`npm run dev`
+
+Sync database to Prisma schema: `npm run db:push`
+
+Start Prisma Studio: `npx prisma studio`
