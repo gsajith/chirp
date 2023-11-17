@@ -1,12 +1,69 @@
 import Head from "next/head";
 
 import styles from "./index.module.css";
-import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
-import { api } from "~/utils/api";
+import { SignInButton, useUser } from "@clerk/nextjs";
+import { type RouterOutputs, api } from "~/utils/api";
+import { type NextPage } from "next";
+import Image from "next/image";
 
-export default function Home() {
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+dayjs.extend(relativeTime);
+
+const CreatePostWizard = () => {
+  const { user } = useUser();
+
+  if (!user) return null;
+
+  return (
+    <div className={styles.profileImageContainer}>
+      <Image
+        width={200}
+        height={200}
+        className={styles.profileImage}
+        src={user.imageUrl}
+        alt="Profile image"
+      />
+      <input className={styles.emojiInput} placeholder="Type some emojis!" />
+    </div>
+  );
+};
+
+type PostWithUser = RouterOutputs["posts"]["getAll"][number];
+
+const PostView = (props: PostWithUser) => {
+  const { post, author } = props;
+
+  return (
+    <div className={styles.post}>
+      <Image
+        width={200}
+        height={200}
+        className={styles.profileImage}
+        src={author.profilePicture}
+        alt={`@${author.name}'s profile picture`}
+      />
+      <div className={styles.postContent}>
+        <div className={styles.postAuthor}>
+          <span>{`@${author.name}`}</span>
+          <span>·</span>
+          <span className={styles.postTime}>
+            {dayjs(post.createdAt).fromNow()}
+          </span>
+        </div>
+        <span>{post.content}</span>
+      </div>
+    </div>
+  );
+};
+
+const Home: NextPage = () => {
   const user = useUser();
-  const { data } = api.posts.getAll.useQuery();
+  const { data, isLoading } = api.posts.getAll.useQuery();
+
+  if (isLoading) return <div>Loading...</div>;
+
+  if (!data) return <div>Something went wrong.</div>;
 
   return (
     <>
@@ -16,16 +73,24 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        <div>
-          {!user.isSignedIn && <SignInButton />}
-          {!!user.isSignedIn && <SignOutButton />}
-        </div>
-        <div>
-          {data?.map((post) => (
-            <div key={post.id}>{post.content}</div>
-          ))}
+        <div className={styles.mainContent}>
+          <div className={styles.topNav}>
+            {!user.isSignedIn && <SignInButton />}
+            {!!user.isSignedIn && (
+              <>
+                <CreatePostWizard />
+              </>
+            )}
+          </div>
+          <div className={styles.postContainer}>
+            {data.map((fullPost) => (
+              <PostView {...fullPost} key={fullPost.post.id} />
+            ))}
+          </div>
         </div>
       </main>
     </>
   );
-}
+};
+
+export default Home;
