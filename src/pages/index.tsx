@@ -8,6 +8,7 @@ import Image from "next/image";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { LoadingPage } from "~/components/loading";
 dayjs.extend(relativeTime);
 
 const CreatePostWizard = () => {
@@ -57,13 +58,29 @@ const PostView = (props: PostWithUser) => {
   );
 };
 
-const Home: NextPage = () => {
-  const user = useUser();
-  const { data, isLoading } = api.posts.getAll.useQuery();
+const Feed = () => {
+  const { data, isLoading: postsLoading } = api.posts.getAll.useQuery();
 
-  if (isLoading) return <div>Loading...</div>;
+  if (postsLoading) return <LoadingPage />;
 
   if (!data) return <div>Something went wrong.</div>;
+
+  return (
+    <div className={styles.postContainer}>
+      {data.map((fullPost) => (
+        <PostView {...fullPost} key={fullPost.post.id} />
+      ))}
+    </div>
+  );
+};
+
+const Home: NextPage = () => {
+  const { isLoaded: userLoaded, isSignedIn } = useUser();
+
+  // Start fetching ASAP
+  api.posts.getAll.useQuery();
+
+  if (!userLoaded) return <div />;
 
   return (
     <>
@@ -75,18 +92,14 @@ const Home: NextPage = () => {
       <main className={styles.main}>
         <div className={styles.mainContent}>
           <div className={styles.topNav}>
-            {!user.isSignedIn && <SignInButton />}
-            {!!user.isSignedIn && (
+            {!isSignedIn && <SignInButton />}
+            {!!isSignedIn && (
               <>
                 <CreatePostWizard />
               </>
             )}
           </div>
-          <div className={styles.postContainer}>
-            {data.map((fullPost) => (
-              <PostView {...fullPost} key={fullPost.post.id} />
-            ))}
-          </div>
+          <Feed />
         </div>
       </main>
     </>
