@@ -54,6 +54,11 @@
   color: #475569;
 }
 
+.postText {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
 .profileImageContainer {
   display: flex;
   gap: 1rem;
