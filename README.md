@@ -35,3 +35,11 @@ Start at localhost:3000:
 Sync database to Prisma schema: `npm run db:push`
 
 Start Prisma Studio: `npx prisma studio`
+
+# TODO
+
+- Pagination instead of `take: 100` via TRPC pagination with infinite queries
+- Link the whole post to post view rather than just the time
+- In CreatePostWizard, use react form with a shared emoji validator on backend and frontend
+- Synchronize database with Clerk so we don't have to do authorId -> userId every time (via a User relation), Clerk is working on making this easier
+- Vercel OG:image library to generate social image preview
