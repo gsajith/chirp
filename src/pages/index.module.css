@@ -78,3 +78,7 @@
   flex-grow: 1;
   font-weight: 500;
 }
+
+.emojiInput:disabled {
+  opacity: 0.3;
+}
