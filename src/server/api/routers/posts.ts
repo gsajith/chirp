@@ -12,7 +12,11 @@ import {
 } from "~/server/api/trpc";
 
 const filterUserForClient = (user: User) => {
-  return { id: user.id, name: user.username, profilePicture: user.imageUrl };
+  return {
+    id: user.id,
+    username: user.username,
+    profilePicture: user.imageUrl,
+  };
 };
 
 // Create a new ratelimiter that allows 3 requests per 1 minute
@@ -40,7 +44,7 @@ export const postsRouter = createTRPCRouter({
     return posts.map((post) => {
       const author = users.find((user) => user.id === post.authorId);
 
-      if (!author?.name)
+      if (!author?.username)
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Author for post not found",
