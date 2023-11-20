@@ -2,7 +2,7 @@ name: CI
 
 on: [push, pull_request]
 
-end:
+env:
   DATABASE_URL: "https://fake.com"
 
 jobs:
