@@ -3,14 +3,11 @@ import Head from "next/head";
 import styles from "./index.module.css";
 import { type GetStaticProps, type NextPage } from "next";
 import { api } from "~/utils/api";
-import { createServerSideHelpers } from "@trpc/react-query/server";
-import superjson from "superjson";
-import { db } from "~/server/db";
-import { appRouter } from "~/server/api/root";
 import { PageLayout } from "~/components/layout";
 import Image from "next/image";
 import { LoadingPage } from "~/components/loading";
 import { PostView } from "~/components/postview";
+import { generateSSGHelper } from "~/server/helpers/ssgHelper";
 
 const ProfileFeed = (props: { userId: string }) => {
   const { data, isLoading } = api.posts.getPostsByUserId.useQuery({
@@ -24,6 +21,7 @@ const ProfileFeed = (props: { userId: string }) => {
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
       {data.map((fullPost) => (
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         <PostView {...fullPost} key={fullPost.post.id} />
       ))}
     </div>
@@ -64,12 +62,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
 };
 
 export const getStaticProps: GetStaticProps = async (context) => {
-  const ssg = createServerSideHelpers({
-    router: appRouter,
-    ctx: { db, userId: null },
-    transformer: superjson, // optional - adds superjson serialization
-  });
-
+  const ssg = generateSSGHelper();
   const slug = context.params?.slug;
 
   if (typeof slug !== "string") {
