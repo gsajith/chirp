@@ -9,6 +9,26 @@ import { db } from "~/server/db";
 import { appRouter } from "~/server/api/root";
 import { PageLayout } from "~/components/layout";
 import Image from "next/image";
+import { LoadingPage } from "~/components/loading";
+import { PostView } from "~/components/postview";
+
+const ProfileFeed = (props: { userId: string }) => {
+  const { data, isLoading } = api.posts.getPostsByUserId.useQuery({
+    userId: props.userId,
+  });
+
+  if (isLoading) return <LoadingPage />;
+
+  if (!data || data.length === 0) return <div>User has not posted.</div>;
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column" }}>
+      {data.map((fullPost) => (
+        <PostView {...fullPost} key={fullPost.post.id} />
+      ))}
+    </div>
+  );
+};
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   const { data } = api.profile.getUserByUsername.useQuery({
@@ -37,6 +57,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
           <div className={styles.profileUsername}>@{data.username}</div>
         </div>
         <div style={{ width: "100%", borderBottom: "1px solid #94a3b8" }} />
+        <ProfileFeed userId={data.id} />
       </PageLayout>
     </>
   );
