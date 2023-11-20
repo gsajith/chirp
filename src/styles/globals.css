@@ -110,3 +110,10 @@ textarea:not([rows]) {
 input {
   border: none;
 }
+
+button {
+  background: none;
+  color: white;
+  border: none;
+  outline: none;
+}
