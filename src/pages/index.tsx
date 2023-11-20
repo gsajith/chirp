@@ -1,5 +1,3 @@
-import Head from "next/head";
-
 import styles from "./index.module.css";
 import { SignInButton, useUser } from "@clerk/nextjs";
 import { type RouterOutputs, api } from "~/utils/api";
@@ -12,6 +10,7 @@ import { LoadingPage, LoadingSpinner } from "~/components/loading";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import { PageLayout } from "~/components/layout";
 dayjs.extend(relativeTime);
 
 const CreatePostWizard = () => {
@@ -85,7 +84,7 @@ const PostView = (props: PostWithUser) => {
       <Image
         width={200}
         height={200}
-        className={styles.profileImage}
+        className={styles.feedProfileImage}
         src={author.profilePicture}
         alt={`@${author.username}'s profile picture`}
       />
@@ -133,24 +132,17 @@ const Home: NextPage = () => {
 
   return (
     <>
-      <Head>
-        <title>Chirp - Emoji Twitter</title>
-        <meta name="description" content="Emoji-only Twitter clone." />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <main className={styles.main}>
-        <div className={styles.mainContent}>
-          <div className={styles.topNav}>
-            {!isSignedIn && <SignInButton />}
-            {!!isSignedIn && (
-              <>
-                <CreatePostWizard />
-              </>
-            )}
-          </div>
-          <Feed />
+      <PageLayout>
+        <div className={styles.topNav}>
+          {!isSignedIn && <SignInButton />}
+          {!!isSignedIn && (
+            <>
+              <CreatePostWizard />
+            </>
+          )}
         </div>
-      </main>
+        <Feed />
+      </PageLayout>
     </>
   );
 };
