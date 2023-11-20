@@ -1,0 +1,24 @@
+name: CI
+
+on: [push, pull_request]
+
+end:
+  DATABASE_URL: "https://fake.com"
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: TypeScript type checking
+      run: npm run typecheck
+
+    - name: ESLint
+      run: npm run lint
